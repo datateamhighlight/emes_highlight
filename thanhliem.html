@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <!-- 1. Tiêu đề -->
-        <h1 class="title">HIGHLIGHT THÁNG 9</h1>
+        <h1 class="title">EMES HIGHLIGHTS</h1>
 
         <!-- 2. Nút đỏ ở giữa -->
         <a href="https://docs.google.com/spreadsheets/d/1Yws9HlLVWgMKaV27ujnLoWNiWAP8IFaPW7pyBdN893A/edit?gid=925091972#gid=925091972" class="btn-main" onclick="alert('Đang mở thông tin suất chơi!')">
@@ -44,6 +44,7 @@
             if (confirm('Bạn có chắc chắn muốn đặt lại bảng suất về ban đầu?')) {
                 localStorage.removeItem('bang_suat_trung_quan');
                 localStorage.removeItem('bang_suat_song_uyen');
+                localStorage.removeItem('bang_suat_nhat_quan');
                 alert('Đã đặt lại dữ liệu ban đầu thành công!');
             }
         }
