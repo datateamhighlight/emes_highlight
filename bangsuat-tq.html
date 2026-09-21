@@ -77,7 +77,7 @@
         }
 
         // URL Web App bạn triển khai từ Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzySydTO90JQ2RwQ9XRCr9T-phhTMZreebdEjsML46LzRyC6tT3AD_JhO5mNrSl75Kyg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJHyHRcI4SU0EuCb4--IB-0cpy65UjGzaIYG6o6EHlGD1rcyXXENvi4esTCeDtozxomg/exec";
 
         // Lắng nghe sự kiện click/change ngay trên bảng
         tbody.addEventListener('change', function(e) {
@@ -113,6 +113,24 @@
                     });
             }
         });
+
+        fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    suatChoi: suat,
+                    status: statusValue
+                })
+            })
+            .then(res => res.text())
+            .then((text) => {
+                console.log(`Đã gửi: ${suat} -> ${statusValue}`, text);
+                checkbox.disabled = false;
+            })
+            .catch((err) => {
+                console.error("Lỗi:", err);
+                checkbox.checked = !checkbox.checked;
+                checkbox.disabled = false;
+            });
 
         // 2. Hàm bấm nút "LƯU DỮ LIỆU"
         function saveData() {
