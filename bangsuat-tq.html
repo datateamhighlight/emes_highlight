@@ -77,7 +77,7 @@
         }
 
         // URL Web App bạn triển khai từ Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJHyHRcI4SU0EuCb4--IB-0cpy65UjGzaIYG6o6EHlGD1rcyXXENvi4esTCeDtozxomg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx25wcLl-_QWiGeCEZhhu3v1gwvR1Ooo8dJS-4dTmtxAPgM3dCVaUKhSnL4laPMXtZeOQ/exec";
 
         // Lắng nghe sự kiện click/change ngay trên bảng
         tbody.addEventListener('change', function(e) {
@@ -88,7 +88,7 @@
                 const statusValue = checkbox.checked ? "Đã hoàn thành" : "Chưa hoàn thành";
 
                 // Khóa tạm để tránh bấm liên tục
-                checkbox.disabled = true;
+                checkbox.disabled = false;
 
                 fetch(SCRIPT_URL, {
                         method: 'POST',
