@@ -45,7 +45,7 @@
                 <!-- Thêm contenteditable="true" để click vào là gõ được -->
                 <td class="col-suat" contenteditable="true" spellcheck="false"> Suất chơi ${i}</td>
                 <td class="col-status">
-                    <input type="checkbox">
+                    <input type="checkbox" class="chk-status" data-suat="Suất chơi ${i}">
                 </td>
              `;
             tbody.appendChild(tr);
@@ -64,12 +64,56 @@
                 tr.innerHTML = `
         <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
         <td class="col-status">
-          <input type="checkbox" ${isChecked ? 'checked' : ''}>
+         < input type = "checkbox"
+                class = "chk-status"
+                data - suat = "${currentText}"
+                $ {
+                    isChecked ? 'checked' : ''
+                } >
         </td>
       `;
                 tbody.appendChild(tr);
             }
         }
+
+        // URL Web App bạn triển khai từ Google Apps Script
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzySydTO90JQ2RwQ9XRCr9T-phhTMZreebdEjsML46LzRyC6tT3AD_JhO5mNrSl75Kyg/exec";
+
+        // Lắng nghe sự kiện click/change ngay trên bảng
+        tbody.addEventListener('change', function(e) {
+            // Kiểm tra xem phần tử vừa tương tác có phải là checkbox trạng thái không
+            if (e.target && e.target.classList.contains('chk-status')) {
+                const checkbox = e.target;
+                const suat = checkbox.getAttribute('data-suat');
+                const statusValue = checkbox.checked ? "Đã hoàn thành" : "Chưa hoàn thành";
+
+                // Khóa tạm để tránh bấm liên tục
+                checkbox.disabled = true;
+
+                fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            suatChoi: suat,
+                            status: statusValue
+                        })
+                    })
+                    .then(() => {
+                        console.log(`Đã gửi: ${suat} -> ${statusValue}`);
+                        checkbox.disabled = false;
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        alert(`Lỗi khi cập nhật cho ${suat}`);
+                        checkbox.checked = !checkbox.checked; // Phục hồi lại nếu lỗi mạng
+                        checkbox.disabled = false;
+                    });
+            }
+        });
+
         // 2. Hàm bấm nút "LƯU DỮ LIỆU"
         function saveData() {
             const rows = tbody.querySelectorAll('tr');
