@@ -38,7 +38,7 @@
         const tbody = document.getElementById('table-body');
         const totalRows = 50;
         const STORAGE_KEY = 'bang_suat_trung_quan';
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5iCLI5O0G2pK6mXo7DHqsL_G_6yVMHwsR_WLEPUIIhBT2LX1UpDgTYAC7jXUNrmRYLg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyscFKQ94MVT6zFxfM3q7CLqSVZdJZRcwmNuNIellXcgFaQmrhH2FH_y_416G3OtQasVw/exec";
 
         // 1. Hàm lưu dữ liệu hiện tại vào localStorage
         function saveToLocal() {
@@ -68,7 +68,7 @@
                 tr.innerHTML = `
         <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
         <td class="col-status">
-          <input type="checkbox" class="chk-status" data-suat="${currentText}" ${isChecked ? 'checked' : ''}>
+          <input type="checkbox" class="chk-status" data-suat="Suất chơi ${i}" ${isChecked ? 'checked' : ''}>
         </td>
       `;
                 tbody.appendChild(tr);
@@ -78,23 +78,23 @@
         // Tự động dựng bảng ngay khi tải trang
         renderTable();
 
-        // // 3. Hàm bấm nút "LƯU DỮ LIỆU"
-        // function saveData() {
-        //     const rows = tbody.querySelectorAll('tr');
-        //     const dataToSave = [];
+        // 3. Hàm bấm nút "LƯU DỮ LIỆU"
+        function saveData() {
+            const rows = tbody.querySelectorAll('tr');
+            const dataToSave = [];
 
-        //     rows.forEach(tr => {
-        //         const name = tr.querySelector('.col-suat').innerText.trim();
-        //         const checked = tr.querySelector('input[type="checkbox"]').checked;
-        //         dataToSave.push({
-        //             name,
-        //             checked
-        //         });
-        //     });
+            rows.forEach(tr => {
+                const name = tr.querySelector('.col-suat').innerText.trim();
+                const checked = tr.querySelector('input[type="checkbox"]').checked;
+                dataToSave.push({
+                    name,
+                    checked
+                });
+            });
 
-        //     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-        //     alert('Đã lưu thành công!');
-        // }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            alert('Đã lưu thành công!');
+        }
 
         // 4. Bắt sự kiện khi click checkbox: Vừa lưu máy vừa gửi Sheet
         tbody.addEventListener('change', function(e) {
@@ -136,12 +136,6 @@
                     });
             }
         });
-
-        // Nút SAVE HIGHLIGHT thủ công (nếu cần)
-        function saveData() {
-            saveToLocal();
-            alert("Đã lưu thành công!");
-        }
 
         // 3. Hàm bấm nút "ĐẶT LẠI BAN ĐẦU" (Xóa sạch bộ nhớ lưu)
         function resetData() {
