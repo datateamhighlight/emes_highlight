@@ -43,6 +43,13 @@
         function resetData() {
             if (confirm('Bạn có chắc chắn muốn đặt lại bảng suất về ban đầu?')) {
                 localStorage.removeItem('bang_suat_trung_quan');
+                localStorage.removeItem('bang_suat_anh_kiet');
+                localStorage.removeItem('bang_suat_xuan_hieu');
+                localStorage.removeItem('bang_suat_thanh_dai');
+                localStorage.removeItem('bang_suat_thuy_duong');
+                localStorage.removeItem('bang_suat_thanh_giang');
+                localStorage.removeItem('bang_suat_quynh_nhu');
+                localStorage.removeItem('bang_suat_minh_chau');
                 localStorage.removeItem('bang_suat_song_uyen');
                 localStorage.removeItem('bang_suat_nhat_quan');
                 alert('Đã đặt lại dữ liệu ban đầu thành công!');

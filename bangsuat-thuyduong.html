@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bangsuat.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>HOÀN THÀNH CÔNG VIỆC</title>
+</head>
+
+<body>
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th class="col-suat">THÙY DƯƠNG | THÔNG TIN SUẤT CHƠI</th>
+                    <th class="col-status">HOÀN THÀNH</th>
+                    <th class="col-count">SỐ LƯỢNG HL (<span id="total-count">0</span>)</th>
+
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Các dòng này sẽ được tạo tự động từ Java Script bên dưới -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="action-buttons">
+        <button id="btn-save" onclick="saveData()">SAVE HIGHLIGHT</button>
+    </div>
+
+    <script>
+        // Tạo 50 dòng tự động
+        const tbody = document.getElementById('table-body');
+        const totalRows = 50;
+        const STORAGE_KEY = 'bang_suat_thuy_duong';
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyscFKQ94MVT6zFxfM3q7CLqSVZdJZRcwmNuNIellXcgFaQmrhH2FH_y_416G3OtQasVw/exec";
+
+        // 1. Hàm lưu dữ liệu hiện tại vào localStorage
+        function saveToLocal() {
+            const data = [];
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const name = row.querySelector('.col-suat') ? row.querySelector('.col-suat').innerText.trim() : '';
+                const checked = row.querySelector('.chk-status') ? row.querySelector('.chk-status').checked : false;
+                data.push({
+                    name: name,
+                    checked: checked
+                });
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // 2. Hàm dựng bảng và tải lại dữ liệu đã lưu vào trang / D5
+        function renderTable() {
+            tbody.innerHTML = '';
+            const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+            for (let i = 1; i <= totalRows; i++) {
+                const currentText = (savedData[i - 1] && savedData[i - 1].name) ? savedData[i - 1].name : `Suất chơi ${i}`;
+                const isChecked = (savedData[i - 1] && savedData[i - 1].checked) ? true : false;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
+        <td class="col-status">
+          <input type="checkbox" class="chk-status" data-suat="Suất chơi ${i}" ${isChecked ? 'checked' : ''}>
+        </td>
+      `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        // Tự động dựng bảng ngay khi tải trang
+        renderTable();
+
+        // 3. Hàm bấm nút "LƯU DỮ LIỆU"
+        function saveData() {
+            const rows = tbody.querySelectorAll('tr');
+            const dataToSave = [];
+
+            rows.forEach(tr => {
+                const name = tr.querySelector('.col-suat').innerText.trim();
+                const checked = tr.querySelector('input[type="checkbox"]').checked;
+                dataToSave.push({
+                    name,
+                    checked
+                });
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            alert('Đã lưu thành công!');
+        }
+
+        // 4. Bắt sự kiện khi click checkbox: Vừa lưu máy vừa gửi Sheet
+        tbody.addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('chk-status')) {
+                const checkbox = e.target;
+                const suat = checkbox.getAttribute('data-suat');
+                const statusValue = checkbox.checked ? "Đã hoàn thành" : "Chưa hoàn thành";
+
+                // Lưu vào máy trước
+                if (typeof saveToLocal === "function") {
+                    saveToLocal();
+                }
+
+                // Khóa tạm để tránh bấm liên tục 
+                checkbox.disabled = true;
+
+                // Gửi trực tiếp sang Google Apps Script
+                fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify({
+                            suatChoi: suat,
+                            status: statusValue
+                        })
+                    })
+                    .then(res => res.text())
+                    .then(resTest => {
+                        console.log(`Đã đồng bộ: ${suat} -> ${statusValue}`, resText);
+                    })
+                    .catch(err => {
+                        console.error("Lỗi gửi Sheet:", err);
+                        checkbox.checked = !checkbox.checked; // Trả lại nếu lỗi
+                        if (typeof saveToLocal === "function") saveToLocal();
+                    })
+                    .finally(() => {
+                        checkbox.disabled = false; // Luôn mở khóa lại
+                    });
+            }
+        });
+
+        // 3. Hàm bấm nút "ĐẶT LẠI BAN ĐẦU" (Xóa sạch bộ nhớ lưu)
+        function resetData() {
+            if (confirm('Bạn có chắc chắn muốn đặt lại toàn bộ bảng về mặc định?')) {
+                localStorage.removeItem('bang_suat_trung_quan');
+                renderTable(); // Vẽ lại 50 suất chơi sạch từ đầu
+            }
+        }
+
+        // Hàm tự động quét và đánh số thứ tự các ô đã tích hoàn thành
+        function updateCompletedCount() {
+            const rows = tbody.querySelectorAll('tr');
+            let count = 0;
+
+            rows.forEach(tr => {
+                const checkbox = tr.querySelector('input[type="checkbox"]');
+                const countCell = tr.querySelector('.col-count');
+
+                if (checkbox.checked) {
+                    count++;
+                    countCell.innerText = count; // Tự gán số: 1, 2, 3...
+                } else {
+                    countCell.innerText = ''; // Chưa tích thì để trống
+                }
+            });
+
+            // Cập nhật tổng số lên tiêu đề cột nếu có span #total-count
+            const totalSpan = document.getElementById('total-count');
+            if (totalSpan) {
+                totalSpan.innerText = count;
+            }
+        }
+
+        // Cập nhật lại hàm renderTable
+        function renderTable() {
+            tbody.innerHTML = '';
+            const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+            for (let i = 1; i <= totalRows; i++) {
+                const currentText = savedData[i - 1] ? savedData[i - 1].name : `Suất chơi ${i}`;
+                const isChecked = savedData[i - 1] ? savedData[i - 1].checked : false;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
+        <td class="col-status">
+          <input type="checkbox" onchange="updateCompletedCount()" ${isChecked ? 'checked' : ''}>
+        </td>
+        <td class="col-count"></td>
+      `;
+                tbody.appendChild(tr);
+            }
+
+            // Tính toán số lượng ngay khi tải trang
+            updateCompletedCount();
+        }
+    </script>
+</body>
+
+</html>
