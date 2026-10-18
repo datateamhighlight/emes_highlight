@@ -38,7 +38,7 @@
         const tbody = document.getElementById('table-body');
         const totalRows = 50;
         const STORAGE_KEY = 'bang_suat_trung_quan';
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyscFKQ94MVT6zFxfM3q7CLqSVZdJZRcwmNuNIellXcgFaQmrhH2FH_y_416G3OtQasVw/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz63mO8JPZAekUzSVpsp-LjJPBnS9YMfcjtctty7sht1eln3XNUpJkh-O9QGC0XLT6s9g/exec";
 
         // 1. Hàm lưu dữ liệu hiện tại vào localStorage
         function saveToLocal() {
@@ -66,11 +66,11 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-        <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
-        <td class="col-status">
-          <input type="checkbox" class="chk-status" data-suat="Suất chơi ${i}" ${isChecked ? 'checked' : ''}>
-        </td>
-      `;
+            <td class="col-suat" contenteditable="true" spellcheck="false">${currentText}</td>
+            <td class="col-status">
+              <input type="checkbox" class="chk-status" data-suat="Suất chơi ${i}" ${isChecked ? 'checked' : ''}>
+            </td>
+          `;
                 tbody.appendChild(tr);
             }
         }
